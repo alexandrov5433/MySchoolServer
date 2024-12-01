@@ -1,5 +1,5 @@
 import { connect } from "mongoose";
-import { dbDomain, dbName, dbPort } from './src/config/serverConfig.js';
+import { dbDomain, dbName, dbPort } from './serverConfig.js';
 
 async function configDb() {
     try {
