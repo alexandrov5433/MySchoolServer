@@ -14,9 +14,7 @@ async function login(req, res) {
     res.status(200);
     res.end();
 }
-const defaultUserPicPath = path.normalize(
-    path.join(__basedir, '/storage/default/')
-);
+
 async function register(req, res) {
     try {
         const authenticationCode = req.body.authenticationCode || null;
