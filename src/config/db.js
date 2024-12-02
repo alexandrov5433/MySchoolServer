@@ -1,10 +1,9 @@
 import { connect } from "mongoose";
-import { dbDomain, dbName, dbPort } from './serverConfig.js';
+import { dbUrl } from './serverConfig.js';
 
 async function configDb() {
     try {
-        // await connect('mongodb://127.0.0.1:27017/someDBName');
-        await connect(`mongodb://${dbDomain}:${dbPort}/${dbName}`);
+        await connect(dbUrl);
         console.log('Connection to DB successfull!');
         return true;
     } catch (error) {
