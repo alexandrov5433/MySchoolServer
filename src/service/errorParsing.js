@@ -6,14 +6,16 @@ export default function parseError(err) {
         } else {
             //mongoose validation error
             const error = new Error('Input validation error.');
-            error.errors = Object.fromEntries(Object.values(err.errors).map( e => [ e.path, e.message ]));
+            error.errors = Object.values(err.errors).map( e => e.message );
+            // error.errors = Object.fromEntries(Object.values(err.errors).map( e => [ e.path, e.message ]));
             return error;
         }
-    } else if (Array.isArray(err)) {
-        //express-validator Error
-        const error = new Error('Input validation error.');
-        error.errors = Object.fromEntries(err.map(e => [e.path, e.msg]));
-        return error;
     }
+    // } else if (Array.isArray(err)) {
+    //     //express-validator Error
+    //     const error = new Error('Input validation error.');
+    //     error.errors = Object.fromEntries(err.map(e => [e.path, e.msg]));
+    //     return error;
+    // }
     return err;
 }
