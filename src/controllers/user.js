@@ -59,10 +59,10 @@ async function register(req, res) {
                 originalName: 'default-profile-picture.jpg',
                 uniqueName: 'default-profile-picture.jpg',
                 pathToFile: path.normalize(
-                    path.join(__basedir, '/storage/default/', 'default-profile-picture.jpg')
+                    path.join(__basedir, '/assets/', 'default-profile-picture.jpg')
                 ),
                 mimeType: 'image/jpeg',
-                encoding: 'none',
+                encoding: '7bit',
             };
             newFile = await fileService.createNewFile(newFileData);
         }
