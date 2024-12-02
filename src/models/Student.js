@@ -18,6 +18,10 @@ const studentSchema = new Schema({
         type: String,
         required: true
     },
+    parents: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }]
 });
 
 const Student = model('Student', studentSchema);

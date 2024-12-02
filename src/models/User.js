@@ -130,15 +130,11 @@ const userSchema = new Schema({
             message: props => `The value "${props.value}" is not a valid password.`
         },
         required: [true, 'Password is missing.']
-    },
-    profilePicture: {
-        type: Schema.Types.ObjectId,
-        ref: 'File'
     }
 });
 
 userSchema.pre('save', async function () {
-    this.password = await bcrypt.hash(this.password, bcryptSaltRounds);
+    this.password = await bcrypt.hash(this.password, Number(bcryptSaltRounds));
 });
 
 const User = model('User', userSchema);

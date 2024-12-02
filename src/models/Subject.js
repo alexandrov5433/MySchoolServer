@@ -30,7 +30,10 @@ const subjectSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Announcements'
     }],
-
+    profilePicture: {
+        type: Schema.Types.ObjectId,
+        ref: 'File'
+    }
 });
 
 const Subject = model('Subject', subjectSchema);
