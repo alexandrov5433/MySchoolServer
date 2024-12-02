@@ -121,7 +121,14 @@ const userSchema = new Schema({
         required: [true, 'City is required.']
     },
     password: {
-        type:String,
+        type: String,
+        validate: {
+            validator: function (val) {
+                const regex = new RegExp('^[0-9A-Za-z$%_!+@?=&,;.:-]{8,}$');
+                return regex.test(val);
+            },
+            message: props => `The value "${props.value}" is not a valid password.`
+        },
         required: [true, 'Password is missing.']
     },
     profilePicture: {
@@ -130,7 +137,7 @@ const userSchema = new Schema({
     }
 });
 
-userSchema.pre('save', async function() {
+userSchema.pre('save', async function () {
     this.password = await bcrypt.hash(this.password, bcryptSaltRounds);
 });
 
