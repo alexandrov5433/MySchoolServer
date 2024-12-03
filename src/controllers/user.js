@@ -18,11 +18,9 @@ async function login(req, res) {
         if (!['parent','student','teacher'].includes(loginData.loginAs)) {
             throw new Error(`The login status "${loginData.loginAs}" is invalid. Options are: parent, student or teacher.`);
         }
-        console.log(req.body);
-
-        const searchResult = await userService.findByLoginDetails(loginData);
-        console.log(searchResult);
         
+        const searchResult = await userService.findByLoginDetails(loginData);
+
         if (!searchResult) {
             throw new Error('A user with these credentials does not exist.');
         }
