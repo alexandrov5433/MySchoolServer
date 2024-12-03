@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { bcryptSaltRounds } from '../config/serverConfig.js';
 
 const userSchema = new Schema({
-    registerAs: {
+    status: {
         type: String,
         enum: {
             values: ['parent', 'teacher', 'student'],
@@ -130,6 +130,31 @@ const userSchema = new Schema({
             message: props => `The value "${props.value}" is not a valid password.`
         },
         required: [true, 'Password is missing.']
+    },
+    profilePicture: {
+        type: Schema.Types.ObjectId,
+        ref: 'File'
+    },
+    //student
+    parentalAuthenticationCode: {
+        type: String
+    },
+    //student
+    uploadedDocuments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'File',
+    }],
+    displayId: {
+        type: String,
+    },
+    //student
+    parents: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    //student
+    activeStudent: {
+        type: Boolean
     }
 });
 
