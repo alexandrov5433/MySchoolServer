@@ -24,7 +24,7 @@ async function login(req, res) {
         console.log(searchResult);
         
         if (!searchResult) {
-            throw new Error('A user with these creadentils does not exist.');
+            throw new Error('A user with these credentials does not exist.');
         }
         const isPasswordCorrect = await authenticationSrvice.comparePassToHash(loginData.password, searchResult.password);
         if (!isPasswordCorrect) {
