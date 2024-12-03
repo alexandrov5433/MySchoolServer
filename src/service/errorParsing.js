@@ -11,11 +11,5 @@ export default function parseError(err) {
             return error;
         }
     }
-    // } else if (Array.isArray(err)) {
-    //     //express-validator Error
-    //     const error = new Error('Input validation error.');
-    //     error.errors = Object.fromEntries(err.map(e => [e.path, e.msg]));
-    //     return error;
-    // }
     return err;
 }
