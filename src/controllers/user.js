@@ -6,6 +6,7 @@ import { fileService } from "../service/file.js";
 import { userService } from "../service/user.js";
 import genId from "../util/idGenerator.js";
 import { autorizationSrvice } from '../service/authorization.js';
+import { nonStudentService } from '../service/nonStudent.js';
 
 async function login(req, res) {
     console.log('Received request at login.');
@@ -36,7 +37,7 @@ async function register(req, res) {
         if (codeCheckResult !== registerData.registerAs) {
             throw new Error('Opps! Either the authentication code is wrong or you have selected the wrong status (parent or teacher).');
         }
-        const newUser = await userService.registerNewUser(registerData);
+        const newUser = await userService.createNewUser(registerData);
         let newFile = null;
         if (req.files && Object.keys(req.files).length !== 0) {
             const file = req.files.profilePicture;
@@ -71,7 +72,7 @@ async function register(req, res) {
             userData: newUser?._id,
             profilePicture: newFile._id
         };
-        await userService.createNewNonStudent(nonStudentData)
+        await nonStudentService.createNewNonStudent(nonStudentData)
         if (registerData.registerAs === 'parent') {
             console.log('TODO add parent to student'); //TODO add parent to student
         }
