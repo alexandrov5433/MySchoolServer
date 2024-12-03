@@ -72,10 +72,13 @@ async function register(req, res) {
             profilePicture: newFile._id
         };
         await userService.createNewNonStudent(nonStudentData)
+        if (registerData.registerAs === 'parent') {
+            console.log('TODO add parent to student'); //TODO add parent to student
+        }
         res.status(200);
         res.json(JSON.stringify({
             status: 200,
-            msg: 'ok'
+            msg: ['ok']
         }));
         res.end();
     } catch (e) {
