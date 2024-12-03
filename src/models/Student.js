@@ -20,7 +20,7 @@ const studentSchema = new Schema({
     },
     parents: [{
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'NonStudent',
     }]
 });
 
