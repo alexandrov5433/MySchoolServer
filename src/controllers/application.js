@@ -12,7 +12,7 @@ async function apply(req, res) {
             throw new Error('The application cannot be submitted without documents.');
         }
         const data = {
-            registerAs: 'student', //only students can apply
+            status: 'student', //only students can apply
             firstName: req.body.firstName.trim(),
             lastName: req.body.lastName.trim(),
             dateOfBirth: req.body.dateOfBirth.trim(),
@@ -82,6 +82,8 @@ async function apply(req, res) {
             await file.mv(defaultProfilePictureData.pathToFile);
         }
 
+        data.displayId = genId().slice(0, 12);
+        data.activeStudent = false;
         const newUser = await userService.createNewUser(data);
         const applicationData = {
             status: 'pending',
