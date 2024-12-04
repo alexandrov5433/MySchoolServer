@@ -20,7 +20,7 @@ const subjectSchema = new Schema({
     },
     participants: [{
         type: Schema.Types.ObjectId,
-        ref: 'Student'
+        ref: 'User'
     }],
     assignments: [{
         type: Schema.Types.ObjectId,
@@ -29,7 +29,20 @@ const subjectSchema = new Schema({
     announcements: [{
         type: Schema.Types.ObjectId,
         ref: 'Announcements'
-    }]
+    }],
+    backgroundImageNumber: {
+        type: String,
+    }
+});
+
+subjectSchema.pre('save', async function () {
+    const num = randomNumber(1, 7);
+    this.backgroundImageNumber = `${num}.jpg`;
+    function randomNumber(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 });
 
 const Subject = model('Subject', subjectSchema);
