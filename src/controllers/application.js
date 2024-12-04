@@ -95,7 +95,7 @@ async function apply(req, res) {
         res.status(200);
         res.json(JSON.stringify({
             status: 200,
-            msg: ['ok']
+            msg: 'ok'
         }));
         res.end();
     } catch (e) {

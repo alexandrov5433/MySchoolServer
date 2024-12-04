@@ -9,7 +9,7 @@ async function createNewSubject(req, res) {
         res.status(200);
         res.json(JSON.stringify({
             status: 200,
-            msg: ['OK :)']
+            msg: 'OK :)'
         }));
         res.end();
 

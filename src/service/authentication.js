@@ -74,12 +74,12 @@ function authGuard(authType, requiredStatus='') {
     const funcs = {
         specificUserStatus: (req, res, next) => {
             const user = req.cookies.user;
-            if (!user || user.status !== requiredStatus) {
+            if (!user || user?.status !== requiredStatus) {
                 console.error('Unauthorized request.');
                 res.status(401);
                 res.json(JSON.stringify({
                     status: 401,
-                    msg: [`This request is not authorized for non-users and users with status "${user.status}".`]
+                    msg: `This request is not authorized for non-users and users with status "${user.status}".`
                 }));
                 res.end();
                 return;
@@ -88,12 +88,12 @@ function authGuard(authType, requiredStatus='') {
         },
         allUsers: (req, res, next) => {
             const user = req.cookies.user;
-            if (!user || !['parent', 'teacher', 'student'].includes(user.status)) {
+            if (!user || !['parent', 'teacher', 'student'].includes(user?.status)) {
                 console.error('Unauthorized request.');
                 res.status(401);
                 res.json(JSON.stringify({
                     status: 401,
-                    msg: ['This request is not authorized for non-users. Please log in and try again.']
+                    msg: 'This request is not authorized for non-users. Please log in and try again.'
                 }));
                 res.end();
                 return;
@@ -102,12 +102,12 @@ function authGuard(authType, requiredStatus='') {
         },
         guest: (req, res, next) => {
             const user = req.cookies.user;
-            if (user || user.status) {
+            if (user || user?.status) {
                 console.error('Unauthorized request.');
                 res.status(401);
                 res.json(JSON.stringify({
                     status: 401,
-                    msg: ['This request is not authorizes. A user is already logged in.']
+                    msg: 'This request is not authorizes. A user is already logged in.'
                 }));
                 res.end();
                 return;
