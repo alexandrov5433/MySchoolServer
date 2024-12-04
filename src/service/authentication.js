@@ -124,9 +124,9 @@ function authGuard(authType, requiredStatus='') {
  * @param {string} status 
  * Options: parent, teacher or student.
  */
-async function generateCookie(id, status) {
+async function generateCookie(_id, status) {
     return new Promise((resolve, reject) => {
-        jwt.sign({ id, status }, jwtSecret, { algorithm: jwtAlgorithm, expiresIn: jwtExparation }, (err, token) => {
+        jwt.sign({ _id, status }, jwtSecret, { algorithm: jwtAlgorithm, expiresIn: jwtExparation }, (err, token) => {
             if (err) {
                 return reject(err);
             }
