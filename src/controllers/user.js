@@ -19,16 +19,18 @@ async function login(req, res) {
             throw new Error(`The login status "${loginData.loginAs}" is invalid. Options are: parent, student or teacher.`);
         }
         
-        const searchResult = await userService.findByLoginDetails(loginData);
+        const existingUser = await userService.findByLoginDetails(loginData);
 
-        if (!searchResult) {
+        if (!existingUser) {
             throw new Error('A user with these credentials does not exist.');
         }
-        const isPasswordCorrect = await authenticationSrvice.comparePassToHash(loginData.password, searchResult.password);
+        const isPasswordCorrect = await authenticationSrvice.comparePassToHash(loginData.password, existingUser.password);
         if (!isPasswordCorrect) {
             throw new Error('Wrong password.');
         }
+        const cookie = await authenticationSrvice.generateCookie(existingUser._id, existingUser.status);
         res.status(200);
+        res.setHeader('Set-Cookie', `user=${cookie}`);
         res.json(JSON.stringify({
             status: 200,
             msg: ['ok']
@@ -99,12 +101,38 @@ async function register(req, res) {
 
         registerData.profilePicture = newFile._id;
         registerData.displayId = genId().slice(0, 12);
-        await userService.createNewUser(registerData);
+        const newUser = await userService.createNewUser(registerData);
      
-        if (registerData.registerAs === 'parent') {
+        if (registerData.status === 'parent') {
             console.log('TODO add parent to student'); //TODO add parent to student
         }
+
+        const cookie = await authenticationSrvice.generateCookie(newUser._id, newUser.status);
         res.status(200);
+        res.setHeader('Set-Cookie', `user=${cookie}`);
+        res.json(JSON.stringify({
+            status: 200,
+            msg: ['ok']
+        }));
+        res.end();
+    } catch (e) {
+        console.log(e);
+        res.status(400);
+        res.json(JSON.stringify({
+            status: 400,
+            msg: parseError(e).errors
+        }));
+        res.end();
+    }
+}
+
+async function logout(req, res) {
+    try {
+        if (!req.userSession) {
+            throw new Error('There is no logged in user.')
+        }
+        res.status(200);
+        res.setHeader('Set-Cookie', `user=''; Max-Age=0`);
         res.json(JSON.stringify({
             status: 200,
             msg: ['ok']
@@ -123,5 +151,6 @@ async function register(req, res) {
 
 export const user = {
     login,
-    register
+    register,
+    logout
 };
