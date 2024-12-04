@@ -1,4 +1,6 @@
 import parseError from "../service/errorParsing.js";
+import { subjectService } from "../service/subject.js";
+import { genDisplayId } from "../util/idGenerator.js";
 
 async function createNewSubject(req, res) {
     try {
@@ -6,17 +8,17 @@ async function createNewSubject(req, res) {
         if (!title) {
             throw new Error('The subject title is missing. Please try again.');
         }
+        const displayId = genDisplayId();
+        const teacher = req.cookies?.user?._id;
+        const newSubject = await subjectService.createNewSubject({teacher, title, displayId});
         res.status(200);
         res.json(JSON.stringify({
             status: 200,
-            msg: 'OK :)'
+            msg: 'ok',
+            newSubjectId: newSubject._id
         }));
         res.end();
-
-
-
-
-    } catch (error) {
+    } catch (e) {
         console.log(e);
         res.status(400);
         res.json(JSON.stringify({
