@@ -1,7 +1,7 @@
 import { applicationService } from "../service/application.js";
 import parseError from "../service/errorParsing.js";
 import { userService } from "../service/user.js";
-import genId from "../util/idGenerator.js";
+import { genDisplayId } from "../util/idGenerator.js";
 import path from 'node:path';
 import { __basedir } from "../config/serverConfig.js";
 import { fileService } from "../service/file.js";
@@ -82,7 +82,7 @@ async function apply(req, res) {
             await file.mv(defaultProfilePictureData.pathToFile);
         }
 
-        data.displayId = genId().slice(0, 12);
+        data.displayId = genDisplayId();
         data.activeStudent = false;
         const newUser = await userService.createNewUser(data);
         const applicationData = {

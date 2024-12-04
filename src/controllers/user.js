@@ -4,7 +4,7 @@ import { __basedir } from "../config/serverConfig.js";
 import parseError from "../service/errorParsing.js";
 import { fileService } from "../service/file.js";
 import { userService } from "../service/user.js";
-import genId from "../util/idGenerator.js";
+import { genDisplayId } from "../util/idGenerator.js";
 import { authenticationSrvice } from '../service/authentication.js';
 
 
@@ -102,7 +102,7 @@ async function register(req, res) {
         }
 
         registerData.profilePicture = newFile._id;
-        registerData.displayId = genId().slice(0, 12);
+        registerData.displayId = genDisplayId();
         const newUser = await userService.createNewUser(registerData);
      
         if (registerData.status === 'parent') {
