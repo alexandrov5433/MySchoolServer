@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 export const jwtSecret = process.env.JWT_SECRET || 'thisSecretShouldBeStoredInA.ENVFile';
-export const jwtAlgorithm = process.env.JWT_ALGORITHM || 'RS256';
+export const jwtAlgorithm = process.env.JWT_ALGORITHM || 'HS256';
 export const jwtExparation = process.env.JWT_EXPARATION || '24h';
 export const authCookieName = process.env.AUTH_COOKIE_NAME || 'mySchoolAuthCookie';
 export const port = process.env.PORT || 3000;
