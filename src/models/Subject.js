@@ -3,7 +3,7 @@ import { Schema, model } from 'mongoose';
 const subjectSchema = new Schema({
     teacher: {
         type: Schema.Types.ObjectId,
-        ref: 'Teacher',
+        ref: 'User',
         required: true
     },
     title: {
@@ -29,11 +29,7 @@ const subjectSchema = new Schema({
     announcements: [{
         type: Schema.Types.ObjectId,
         ref: 'Announcements'
-    }],
-    profilePicture: {
-        type: Schema.Types.ObjectId,
-        ref: 'File'
-    }
+    }]
 });
 
 const Subject = model('Subject', subjectSchema);
