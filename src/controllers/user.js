@@ -29,11 +29,13 @@ async function login(req, res) {
             throw new Error('Wrong password.');
         }
         const cookie = await authenticationSrvice.generateCookie(existingUser._id, existingUser.status);
+        console.log(cookie);
+        
         res.status(200);
-        res.setHeader('Set-Cookie', `user=${cookie}`);
+        res.cookie('user', `${cookie}`, { secure: false, httpOnly: false });
         res.json(JSON.stringify({
             status: 200,
-            msg: ['ok']
+            msg: 'ok'
         }));
         res.end();
     } catch (e) {
@@ -109,10 +111,10 @@ async function register(req, res) {
 
         const cookie = await authenticationSrvice.generateCookie(newUser._id, newUser.status);
         res.status(200);
-        res.setHeader('Set-Cookie', `user=${cookie}`);
+        res.cookie('user', `${cookie}`, { secure: false, httpOnly: false });
         res.json(JSON.stringify({
             status: 200,
-            msg: ['ok']
+            msg: 'ok'
         }));
         res.end();
     } catch (e) {
@@ -132,10 +134,10 @@ async function logout(req, res) {
             throw new Error('There is no logged in user.')
         }
         res.status(200);
-        res.setHeader('Set-Cookie', `user=''; Max-Age=0`);
+        res.cookie('user', '', { secure: false, httpOnly: false, maxAge: 0 });
         res.json(JSON.stringify({
             status: 200,
-            msg: ['ok']
+            msg: 'ok'
         }));
         res.end();
     } catch (e) {
