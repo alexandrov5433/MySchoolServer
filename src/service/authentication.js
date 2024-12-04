@@ -67,14 +67,14 @@ async function checkCookie(req, res, next) {
  * Returns a middleware that checks every request for the needed authentication.
  * @param {string} authType
  * Options: guest, allUsers or specificUserStatus. If guest or allUsers is given, second param is ignored.
- * @param {string} requiredStatus 
+ * @param {Array<String>} requiredStatus 
  * Options: parent, student or teacher.
  */
-function authGuard(authType, requiredStatus='') {
+function authGuard(authType, requiredStatus=[]) {
     const funcs = {
         specificUserStatus: (req, res, next) => {
             const user = req.cookies.user;
-            if (!user || user?.status !== requiredStatus) {
+            if (!user || !requiredStatus.includes(user?.status)) {
                 console.error('Unauthorized request.');
                 res.status(401);
                 res.json(JSON.stringify({
@@ -105,6 +105,7 @@ function authGuard(authType, requiredStatus='') {
             if (user || user?.status) {
                 console.error('Unauthorized request.');
                 res.status(401);
+                res.cookie('user', '', { secure: false, httpOnly: false, maxAge: 0 });
                 res.json(JSON.stringify({
                     status: 401,
                     msg: 'This request is not authorizes. A user is already logged in.'
