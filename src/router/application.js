@@ -4,7 +4,10 @@ import { authenticationSrvice } from "../service/authentication.js";
 
 const router = Router();
 
-// router.get('/:applicationId', );  //teacher application review
+router.get('/single-pending-application/:_id', 
+    authenticationSrvice.authGuard('specificUserStatus', 'teacher'),
+    application.getPendingApplicationById
+);  //teacher application review
 router.get('/pending',
     authenticationSrvice.authGuard('specificUserStatus', 'teacher'),
     application.getPendingApplications
