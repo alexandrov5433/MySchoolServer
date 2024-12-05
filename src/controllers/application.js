@@ -85,6 +85,7 @@ async function apply(req, res) {
         data.displayId = genDisplayId();
         data.activeStudent = false;
         data.uploadedDocuments = documentFiles.map(file => file._id);
+        data.profilePicture = profilePictureFile._id;
         const newUser = await userService.createNewUser(data);
         const applicationData = {
             status: 'pending',
@@ -112,12 +113,10 @@ async function apply(req, res) {
 
 async function getPendingApplications(req, res) {
     try {
-        const status = 'pending';
-        console.log(req.query);
-        const studentFirstName = req.qurey.studentFirstName || '';
-        const studentLastName = req.qurey.studentLastName || '';
-        const studentDisplayId = req.qurey.studentDisplayId || '';
-        const searchResults = await applicationService.
+        const studentFirstName = req.query.studentFirstName || '';
+        const studentLastName = req.query.studentLastName || '';
+        const studentDisplayId = req.query.studentDisplayId || '';
+        const searchResults = await applicationService.getPendingApplications(studentFirstName, studentLastName, studentDisplayId);
         // payload = {
         //     results: [
         //         {
@@ -128,11 +127,41 @@ async function getPendingApplications(req, res) {
         //         }
         //     ]
         // }
+        const payload = {};
+        payload.results = searchResults.reduce((acc, cur) => {
+            acc.push({
+                _id: cur._id,
+                applicantName: cur.applicant.firstName + ' ' + cur.applicant.lastName,
+                displayId: cur.applicant.displayId,
+                profilePictureId: cur.applicant.profilePicture
+            });
+            return acc;
+        }, []);
         res.status(200);
+        res.json(JSON.stringify(payload));
+        res.end();
+    } catch (e) {
+        console.log(e);
+        res.status(400);
         res.json(JSON.stringify({
-            status: 200,
-            msg: 'ok'
+            status: 400,
+            msg: parseError(e).errors
         }));
+        res.end();
+    }
+}
+
+async function getPendingApplicationById(req, res) {
+    try {
+        const _id = req.params._id || '';
+        console.log('_id: ', _id );
+        console.log(req.params);
+        
+        const payload = await applicationService.getPendingApplicationById(_id);
+        console.log(payload);
+        
+        res.status(200);
+        res.json(JSON.stringify(payload));
         res.end();
     } catch (e) {
         console.log(e);
@@ -147,5 +176,6 @@ async function getPendingApplications(req, res) {
 
 export const application = {
     apply,
-    getPendingApplications
+    getPendingApplications,
+    getPendingApplicationById
 };
