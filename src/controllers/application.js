@@ -110,6 +110,42 @@ async function apply(req, res) {
     }
 }
 
+async function getPendingApplications(req, res) {
+    try {
+        const status = 'pending';
+        console.log(req.query);
+        const studentFirstName = req.qurey.studentFirstName || '';
+        const studentLastName = req.qurey.studentLastName || '';
+        const studentDisplayId = req.qurey.studentDisplayId || '';
+        const searchResults = await applicationService.
+        // payload = {
+        //     results: [
+        //         {
+        //             _id: string,
+        //             applicantName: string,
+        //             displayId: string,
+        //             profilePictureId: string
+        //         }
+        //     ]
+        // }
+        res.status(200);
+        res.json(JSON.stringify({
+            status: 200,
+            msg: 'ok'
+        }));
+        res.end();
+    } catch (e) {
+        console.log(e);
+        res.status(400);
+        res.json(JSON.stringify({
+            status: 400,
+            msg: parseError(e).errors
+        }));
+        res.end();
+    }
+}
+
 export const application = {
-    apply
+    apply,
+    getPendingApplications
 };
