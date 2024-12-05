@@ -9,5 +9,9 @@ router.get('/',
     authenticationSrvice.authGuard('specificUserStatus', ['student', 'teacher']),
     subjects.getSubjects
 );
+router.get('/details/:_id',
+    authenticationSrvice.authGuard('specificUserStatus', ['student', 'teacher']),
+    subjects.getSubjectDetails
+);
 
 export default router;

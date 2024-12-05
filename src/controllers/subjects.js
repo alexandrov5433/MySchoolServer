@@ -85,7 +85,52 @@ async function getSubjects(req, res) {
     }
 }
 
+async function getSubjectDetails(req, res) {
+    try {
+        const _id = req.params._id; //subject _id
+        console.log(_id);
+        const payload = {
+            subject: {}
+        };
+        const searchRes = await subjectService.getSubjectById(_id);
+
+        console.log(searchRes);
+        // payload
+        // {
+        //     subject: 
+        //         {
+        //             _id: string,
+        //             teacher: string,
+        //             title: string,
+        //             displayId: string,
+        //             backgroundImageNumber: string
+        //         }
+        //     
+        // }
+        payload.subject = {
+            _id: searchRes._id,
+            teacher: searchRes.teacher.firstName + ' ' + searchRes.teacher.lastName,
+            teacherPictureId: searchRes.teacher.profilePicture,
+            title: searchRes.title,
+            displayId: searchRes.displayId,
+            backgroundImageNumber: searchRes.backgroundImageNumber,
+        }
+        res.status(200);
+        res.json(JSON.stringify(payload));
+        res.end();
+    } catch (e) {
+        console.log(e);
+        res.status(400);
+        res.json(JSON.stringify({
+            status: 400,
+            msg: parseError(e).errors
+        }));
+        res.end();
+    }
+}
+
 export const subjects = {
     createNewSubject,
-    getSubjects
+    getSubjects,
+    getSubjectDetails
 };
