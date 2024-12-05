@@ -1,7 +1,7 @@
 import { applicationService } from "../service/application.js";
 import parseError from "../service/errorParsing.js";
 import { userService } from "../service/user.js";
-import { genDisplayId } from "../util/idGenerator.js";
+import { genDisplayId, genId } from "../util/idGenerator.js";
 import path from 'node:path';
 import { __basedir } from "../config/serverConfig.js";
 import { fileService } from "../service/file.js";
@@ -84,6 +84,7 @@ async function apply(req, res) {
 
         data.displayId = genDisplayId();
         data.activeStudent = false;
+        data.uploadedDocuments = documentFiles.map(file => file._id);
         const newUser = await userService.createNewUser(data);
         const applicationData = {
             status: 'pending',
