@@ -1,6 +1,17 @@
 import { connect } from "mongoose";
 import { dbUrl } from './serverConfig.js';
 
+//models
+import Announcement from '../models/Announcement.js';
+import Application from "../models/Application.js";
+import Assignment from '../models/Assignment.js';
+import AssignmentSubmition from "../models/AssignmentSubmition.js";
+import File from "../models/File.js";
+import Grade from '../models/Grade.js';
+import Grading from '../models/Grading.js';
+import Subject from "../models/Subject.js";
+import User from "../models/User.js";
+
 async function configDb() {
     try {
         await connect(dbUrl);
