@@ -88,13 +88,11 @@ async function getSubjects(req, res) {
 async function getSubjectDetails(req, res) {
     try {
         const _id = req.params._id; //subject _id
-        console.log(_id);
         const payload = {
             subject: {}
         };
         const searchRes = await subjectService.getSubjectById(_id);
 
-        console.log(searchRes);
         // payload
         // {
         //     subject: 
