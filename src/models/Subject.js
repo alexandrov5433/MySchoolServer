@@ -28,7 +28,7 @@ const subjectSchema = new Schema({
     }],
     announcements: [{
         type: Schema.Types.ObjectId,
-        ref: 'Announcements'
+        ref: 'Announcement'
     }],
     backgroundImageNumber: {
         type: String,
@@ -36,6 +36,9 @@ const subjectSchema = new Schema({
 });
 
 subjectSchema.pre('save', async function () {
+    if (this.backgroundImageNumber) {
+        return;
+    }
     const num = randomNumber(1, 7);
     this.backgroundImageNumber = `${num}.jpg`;
     function randomNumber(min, max) {

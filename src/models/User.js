@@ -162,6 +162,9 @@ const userSchema = new Schema({
 });
 
 userSchema.pre('save', async function () {
+    if (this.backgroundImageNumber) {
+        return;
+    }
     const num = randomNumber(1, 7);
     this.backgroundImageNumber = `${num}.jpg`;
     function randomNumber(min, max) {
