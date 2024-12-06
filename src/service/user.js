@@ -4,6 +4,10 @@ async function createNewUser(data) {
     return await User.create(data);
 }
 
+async function getUserById(_id) {
+    return await User.findById(_id);
+}
+
 async function findByLoginDetails(data) {
     // {
     //     loginAs: req.body.loginAs,
@@ -29,6 +33,7 @@ async function isActiveStudent(email) {
 
 export const userService = {
     createNewUser,
+    getUserById,
     findByLoginDetails,
     promoteUserToStudent,
     isActiveStudent

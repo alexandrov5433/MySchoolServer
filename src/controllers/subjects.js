@@ -1,5 +1,6 @@
 import parseError from "../service/errorParsing.js";
 import { subjectService } from "../service/subject.js";
+import { userService } from "../service/user.js";
 import { genDisplayId } from "../util/idGenerator.js";
 
 async function createNewSubject(req, res) {
@@ -88,30 +89,9 @@ async function getSubjects(req, res) {
 async function getSubjectDetails(req, res) {
     try {
         const _id = req.params._id; //subject _id
-        const payload = {
-            subject: {}
-        };
-        const searchRes = await subjectService.getSubjectById(_id);
-
-        // payload
-        // {
-        //     subject: 
-        //         {
-        //             _id: string,
-        //             teacher: string,
-        //             title: string,
-        //             displayId: string,
-        //             backgroundImageNumber: string
-        //         }
-        //     
-        // }
-        payload.subject = {
-            _id: searchRes._id,
-            teacher: searchRes.teacher.firstName + ' ' + searchRes.teacher.lastName,
-            teacherPictureId: searchRes.teacher.profilePicture,
-            title: searchRes.title,
-            displayId: searchRes.displayId,
-            backgroundImageNumber: searchRes.backgroundImageNumber,
+        const payload = await subjectService.getSubjectById(_id);
+        if (!payload) {
+            throw new Error(`No subject with "_id":"${_id}" was found.`);
         }
         res.status(200);
         res.json(JSON.stringify(payload));
@@ -127,8 +107,65 @@ async function getSubjectDetails(req, res) {
     }
 }
 
+async function maganeParticipation(req, res) {
+    try {
+        console.log(req.body);
+        
+        const subjectId = req.body.subjectId; //Subject _id
+        const userId = req.body.userId; //User _id
+        const action = req.body.action; //join or leave
+
+        const subject = await subjectService.getSubjectById(subjectId);
+        const user = await userService.getUserById(userId);
+        if (!subject) {
+            throw new Error(`No subject with "_id":"${subjectId}" was found.`);
+        }
+        if (!user) {
+            throw new Error(`No user with "_id":"${userId}" was found.`);
+        }
+        if (!['leave', 'join'].includes(action)) {
+            throw new Error(`The action "${action}" is not permited. Please try agian. Options are "leave" and "join".`);
+        }
+        const isAlreadyParticipant = Boolean(subject.participants.find( p => p._id == userId ));
+        const actionsLib = {
+            join: async () => {
+                if (isAlreadyParticipant) {
+                    throw new Error(`The user with _id: "${userId}" is already a participant in the subject with _id: "${subjectId}".`);
+                }
+                const addition = await subjectService.addParticipant(subjectId, userId);
+                console.log('addition', addition);
+                
+                return 'A student has joined the subject.';
+            },
+            leave: async () => {
+                if (!isAlreadyParticipant) {
+                    throw new Error(`The user with _id: "${userId}" is not a participant in the subject with _id: "${subjectId}".`);
+                }
+                await subjectService.removeParticipant(subjectId, userId);
+                return 'A student has left the subject.';
+            }
+        };
+        const result = await actionsLib[action]();
+        res.status(200);
+        res.json(JSON.stringify({
+            status: 'ok',
+            msg: result
+        }));
+        res.end();
+    } catch (e) {
+        console.log(e);
+        res.status(400);
+        res.json(JSON.stringify({
+            status: 400,
+            msg: parseError(e).errors
+        }));
+        res.end();
+    }
+}
+
 export const subjects = {
     createNewSubject,
     getSubjects,
-    getSubjectDetails
+    getSubjectDetails,
+    maganeParticipation
 };

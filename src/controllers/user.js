@@ -39,7 +39,8 @@ async function login(req, res) {
         res.cookie('user', `${cookie}`, { secure: false, httpOnly: false });
         res.json(JSON.stringify({
             status: 200,
-            msg: 'ok'
+            msg: 'ok',
+            user_id: existingUser._id
         }));
         res.end();
     } catch (e) {
@@ -118,7 +119,8 @@ async function register(req, res) {
         res.cookie('user', `${cookie}`, { secure: false, httpOnly: false });
         res.json(JSON.stringify({
             status: 200,
-            msg: 'ok'
+            msg: 'ok',
+            user_id: newUser._id
         }));
         res.end();
     } catch (e) {
