@@ -13,7 +13,11 @@ router.get('/pending',
     application.getPendingApplications
 );  //teacher application review
 router.post('/', authenticationSrvice.authGuard('guest'), application.apply); //apply now (register) - applicant (student)
-// router.delete('/:applicationId', );  //teacher REJECTS application
-// router.put('/:applicationId', );  //teacher ACCEPTS application
+router.post('/manage',
+    authenticationSrvice.authGuard('specificUserStatus', 'teacher'),
+    application.manageApplication
+);
+//teacher REJECTS application
+//teacher ACCEPTS application
 
 export default router;

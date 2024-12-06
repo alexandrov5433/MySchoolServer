@@ -5,6 +5,8 @@ import { genDisplayId, genId } from "../util/idGenerator.js";
 import path from 'node:path';
 import { __basedir } from "../config/serverConfig.js";
 import { fileService } from "../service/file.js";
+import { genParentalAuthCode } from "../util/parentalAuthCodeGenerator.js";
+import { error } from "node:console";
 
 async function apply(req, res) {
     try {
@@ -86,6 +88,7 @@ async function apply(req, res) {
         data.activeStudent = false;
         data.uploadedDocuments = documentFiles.map(file => file._id);
         data.profilePicture = profilePictureFile._id;
+        data.parentalAuthenticationCode = genParentalAuthCode();
         const newUser = await userService.createNewUser(data);
         const applicationData = {
             status: 'pending',
@@ -100,6 +103,18 @@ async function apply(req, res) {
             msg: 'ok'
         }));
         res.end();
+        console.log(`
+            ##############################################################\n
+            ####################   New Application   #####################\n
+            \n
+            ------------------------- User Data --------------------------\n
+            _id: ${newUser._id}\n
+            email: ${newUser.email}\n
+            firstName: ${newUser.firstName}\n
+            lastName: ${newUser.lastName}\n
+            parentalAuthenticationCode: ${newUser.parentalAuthenticationCode}\n
+            \n
+            ##############################################################\n`);
     } catch (e) {
         console.log(e);
         res.status(400);
@@ -154,14 +169,59 @@ async function getPendingApplications(req, res) {
 async function getPendingApplicationById(req, res) {
     try {
         const _id = req.params._id || '';
-        console.log('_id: ', _id );
-        console.log(req.params);
-        
         const payload = await applicationService.getPendingApplicationById(_id);
-        console.log(payload);
-        
         res.status(200);
         res.json(JSON.stringify(payload));
+        res.end();
+    } catch (e) {
+        console.log(e);
+        res.status(400);
+        res.json(JSON.stringify({
+            status: 400,
+            msg: parseError(e).errors
+        }));
+        res.end();
+    }
+}
+
+async function manageApplication(req, res) {
+    try {
+        console.log('manage', req.body);
+        const _id = req.body._id || '';
+        const action = req.body.action || '';
+        console.log(_id, action);
+        if (!_id) {
+            throw new Error(`For an application to be managed the "_id" must be present. The recieved value for "_id" is: "${_id}".`);
+        } else if (!['accept', 'reject'].includes(action)) {
+            throw new Error(`Incorrect "action". Possible values are "accept" and "reject". The recieved value for "action" is: "${action}".`);
+        }
+        const actionsLib = {
+            accept: async (appId) => {
+                const document = await applicationService.acceptPendingApplication(appId);
+                if (document) {
+                    const userId = document.applicant._id;
+                    const applicantPromoted = await userService.promoteUserToStudent(userId);
+                    if (applicantPromoted) {
+                        return true;
+                    }
+                    throw new Error(`Could not promote user to student. User with "_id":"${userId}" not found.`);
+                }
+                return false;
+            },
+            reject: async (appId) => {
+                const document = await applicationService.rejectPendingApplication(appId);
+                return Boolean(document);
+            }
+        };
+        const success = await actionsLib[action](_id);
+        if (!success) {
+            throw new Error(`A pending application with "_id":"${_id}" was not found. The "action":"${action}" could not be excuted. Please try again.`);
+        }
+        res.status(200);
+        res.json(JSON.stringify({
+            status: 200,
+            msg: 'ok'
+        }));
         res.end();
     } catch (e) {
         console.log(e);
@@ -177,5 +237,6 @@ async function getPendingApplicationById(req, res) {
 export const application = {
     apply,
     getPendingApplications,
-    getPendingApplicationById
+    getPendingApplicationById,
+    manageApplication
 };
