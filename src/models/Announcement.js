@@ -14,8 +14,12 @@ const announcementSchema = new Schema({
         type: String,
         required: true
     },
+    dateTime: {
+        type: String,
+        required: true
+    }
 });
 
-const Announcement = model('Assignment', announcementSchema);
+const Announcement = model('Announcement', announcementSchema);
 
 export default Announcement;
