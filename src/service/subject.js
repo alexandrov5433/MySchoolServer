@@ -41,9 +41,21 @@ async function addParticipant(subjectId, userId) {
     return subject.save();
 }
 
+async function addAnnouncement(subjectId, announId) {
+    const subject = await Subject.findById(subjectId);
+    subject.announcements.push(announId);
+    return subject.save();
+}
+
 async function removeParticipant(subjectId, userId) {
     const subject = await Subject.findById(subjectId);
     subject.participants = subject.participants.filter(p => p._id != userId);
+    return subject.save();
+}
+
+async function removeAnnouncement(subjectId, announId) {
+    const subject = await Subject.findById(subjectId);
+    subject.announcements = subject.announcements.filter(a => a._id != announId);
     return subject.save();
 }
 
@@ -54,5 +66,7 @@ export const subjectService = {
     getSubjectById,
     getSubjectsForTeacher,
     addParticipant,
-    removeParticipant
+    removeParticipant,
+    addAnnouncement,
+    removeAnnouncement
 };

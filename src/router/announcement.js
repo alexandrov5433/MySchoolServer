@@ -8,5 +8,9 @@ router.post('/',
     authenticationSrvice.authGuard('specificUserStatus', ['teacher']),
     announcement.publishAnnouncement
 );
+router.delete('/',
+    authenticationSrvice.authGuard('specificUserStatus', ['teacher']),
+    announcement.deleteAnnouncement
+);
 
 export default router;
