@@ -23,7 +23,9 @@ async function getSubjectsByTitleAndDisplayId(title, displayId) {
 }
 
 async function getSubjectById(_id) {
-    return await Subject.findById(_id).populate(['teacher', 'materials', 'participants', 'assignments', 'announcements']);
+    const subject = await Subject.findById(_id).populate(['teacher', 'materials', 'participants', 'assignments', 'announcements']);
+    subject.announcements.sort((a, b) => Number(b.dateTime) - Number(a.dateTime));
+    return subject;
 }
 /**
  * Get the Subject documents in which the user with _id is a teacher (creator).
