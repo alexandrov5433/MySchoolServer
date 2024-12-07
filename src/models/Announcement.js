@@ -3,7 +3,7 @@ import { Schema, model } from 'mongoose';
 const announcementSchema = new Schema({
     teacher: {
         type: Schema.Types.ObjectId,
-        ref: 'Teacher',
+        ref: 'User',
         required: true
     },
     title: {
