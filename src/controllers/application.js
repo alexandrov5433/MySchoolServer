@@ -6,7 +6,6 @@ import path from 'node:path';
 import { __basedir } from "../config/serverConfig.js";
 import { fileService } from "../service/file.js";
 import { genParentalAuthCode } from "../util/parentalAuthCodeGenerator.js";
-import { error } from "node:console";
 
 async function apply(req, res) {
     try {
