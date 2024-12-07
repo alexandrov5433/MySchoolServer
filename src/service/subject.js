@@ -10,7 +10,13 @@ async function createNewSubject(data) {
  * @returns 
  */
 async function getSubjectsForParticipant(_id) {
-    return await Subject.find({ participants: { $elemMatch: { _id } } }).populate('teacher');
+    const subjects = await Subject.find().populate('teacher');
+    return subjects.filter( s => {
+        if (s.participants.find( p => p.toString() == _id )) {
+            return true;
+        }
+        return false;
+    });
 }
 
 async function getSubjectsByTitleAndDisplayId(title, displayId) {
@@ -23,7 +29,28 @@ async function getSubjectsByTitleAndDisplayId(title, displayId) {
 }
 
 async function getSubjectById(_id) {
-    const subject = await Subject.findById(_id).populate(['teacher', 'materials', 'participants', 'assignments', 'announcements']);
+    const subject = await Subject.findById(_id).populate([
+        { path: 'teacher' },
+        { path: 'materials' },
+        { path: 'participants' },
+        {
+            path: 'assignments', populate: [
+                { path: 'teacher' },
+                { path: 'resource' },
+                {
+                    path: 'assignmentSubmitions', populate: [
+                        { path: 'student' },
+                        { path: 'document' },
+                    ]
+                }
+            ]
+        },
+        { path: 'announcements' },
+    ]);
+    // [
+    //     'teacher', 'materials', 'participants', 'assignments', 'announcements', 'assignments.teacher', 'assignments.resource', 'assignments.assignmentSubmitions', 'assignments.assignmentSubmitions.student', 'assignments.assignmentSubmitions.document'
+    // ]
+
     subject.announcements.sort((a, b) => Number(b.dateTime) - Number(a.dateTime));
     return subject;
 }
@@ -49,6 +76,12 @@ async function addAnnouncement(subjectId, announId) {
     return subject.save();
 }
 
+async function addAssignment(subjectId, assignmentId) {
+    const subject = await Subject.findById(subjectId);
+    subject.assignments.push(assignmentId);
+    return subject.save();
+}
+
 async function removeParticipant(subjectId, userId) {
     const subject = await Subject.findById(subjectId);
     subject.participants = subject.participants.filter(p => p._id != userId);
@@ -61,6 +94,18 @@ async function removeAnnouncement(subjectId, announId) {
     return subject.save();
 }
 
+async function addMaterial(subjectId, maretialId) {
+    const subject = await Subject.findById(subjectId);
+    subject.materials.push(maretialId);
+    return subject.save();
+}
+
+async function removeMaterial(subjectId, maretialId) {
+    const subject = await Subject.findById(subjectId);
+    subject.materials = subject.materials.filter(a => a._id != maretialId);
+    return subject.save();
+}
+
 export const subjectService = {
     createNewSubject,
     getSubjectsForParticipant,
@@ -70,5 +115,8 @@ export const subjectService = {
     addParticipant,
     removeParticipant,
     addAnnouncement,
-    removeAnnouncement
+    removeAnnouncement,
+    addAssignment,
+    addMaterial,
+    removeMaterial
 };
