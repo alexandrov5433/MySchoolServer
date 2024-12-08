@@ -5,7 +5,9 @@ async function createNewUser(data) {
 }
 
 async function getUserById(_id) {
-    return await User.findById(_id);
+    const user = await User.findById(_id);
+    user.password = '';
+    return user;
 }
 
 async function findByLoginDetails(data) {
@@ -31,10 +33,31 @@ async function isActiveStudent(email) {
     return Boolean(document);
 }
 
+async function getUserUploadedDocuments(userId) {
+    const user = await User.findById(userId).populate('uploadedDocuments');
+    return user.uploadedDocuments.reverse();
+}
+
+async function addUploadedDocumnetByUserId(userId, documentId) {
+    const user = await User.findById(userId);
+    user.uploadedDocuments.push(documentId);
+    user.save();
+    return true;
+}
+async function removeUploadedDocumnetByUserId(userId, documentId) {
+    const user = await User.findById(userId);
+    user.uploadedDocuments = user.uploadedDocuments.filter(d => d._id != documentId);
+    user.save();
+    return true;
+}
+
 export const userService = {
     createNewUser,
     getUserById,
     findByLoginDetails,
     promoteUserToStudent,
-    isActiveStudent
+    isActiveStudent,
+    getUserUploadedDocuments,
+    addUploadedDocumnetByUserId,
+    removeUploadedDocumnetByUserId
 };
