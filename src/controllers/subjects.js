@@ -1,4 +1,5 @@
 import parseError from "../service/errorParsing.js";
+import { gradeService } from "../service/grade.js";
 import { subjectService } from "../service/subject.js";
 import { userService } from "../service/user.js";
 import { genDisplayId } from "../util/idGenerator.js";
@@ -134,7 +135,7 @@ async function maganeParticipation(req, res) {
                 }
                 const addition = await subjectService.addParticipant(subjectId, userId);
                 console.log('addition', addition);
-                
+                await gradeService.addGradingForStudentAndSubjectIfOneDoesNotExist(userId, subjectId);
                 return 'A student has joined the subject.';
             },
             leave: async () => {

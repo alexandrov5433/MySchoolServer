@@ -6,6 +6,7 @@ import fileRouter from './file.js';
 import announcementRouter from './announcement.js';
 import assignmentRouter from './assignment.js';
 import materialRouter from './material.js';
+import profileRouter from './profile.js';
 
 const router = Router();
 
@@ -16,9 +17,11 @@ router.use('/file', fileRouter);
 router.use('/announcement', announcementRouter);
 router.use('/assignment', assignmentRouter);
 router.use('/material', materialRouter);
+router.use('/profile', profileRouter);
 
 
 router.use('*', (req, res) => {
+    console.log(`Requested path not found: ${req.url}`);
     res.status(404);
     res.json(JSON.stringify({
         status: 404,
