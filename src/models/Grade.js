@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 
 const gradeSchema = new Schema({
     value: {
-        type: Number,
+        type: String,
         required: true
     }
 });
