@@ -1,11 +1,12 @@
 import path from 'node:path';
 
-import { __basedir } from "../config/serverConfig.js";
+import { __basedir, bcryptSaltRounds } from "../config/serverConfig.js";
 import parseError from "../service/errorParsing.js";
 import { fileService } from "../service/file.js";
 import { userService } from "../service/user.js";
 import { genDisplayId } from "../util/idGenerator.js";
 import { authenticationSrvice } from '../service/authentication.js';
+import bcrypt from 'bcrypt';
 
 
 async function login(req, res) {
@@ -108,6 +109,7 @@ async function register(req, res) {
 
         registerData.profilePicture = newFile._id;
         registerData.displayId = genDisplayId();
+        registerData.password = await bcrypt.hash(registerData.password, Number(bcryptSaltRounds));
         const newUser = await userService.createNewUser(registerData);
      
         if (registerData.status === 'parent') {
