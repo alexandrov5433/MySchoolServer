@@ -122,13 +122,13 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        validate: {
-            validator: function (val) {
-                const regex = new RegExp('^[0-9A-Za-z$%_!+@?=&,;.:-]{8,}$');
-                return regex.test(val);
-            },
-            message: props => `The value "${props.value}" is not a valid password.`
-        },
+        // validate: {
+        //     validator: function (val) {
+        //         const regex = new RegExp('^[0-9A-Za-z$%_!+@?=&,;.:-]{8,}$');
+        //         return regex.test(val);
+        //     },
+        //     message: props => `The value "${props.value}" is not a valid password.`
+        // },
         required: [true, 'Password is missing.']
     },
     profilePicture: {
@@ -158,7 +158,11 @@ const userSchema = new Schema({
     },
     backgroundImageNumber: {
         type: String,
-    }
+    },
+    children: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }],
 });
 
 userSchema.pre('save', async function () {
@@ -172,10 +176,6 @@ userSchema.pre('save', async function () {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-});
-
-userSchema.pre('save', async function () {
-    this.password = await bcrypt.hash(this.password, Number(bcryptSaltRounds));
 });
 
 const User = model('User', userSchema);

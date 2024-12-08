@@ -3,9 +3,10 @@ import parseError from "../service/errorParsing.js";
 import { userService } from "../service/user.js";
 import { genDisplayId, genId } from "../util/idGenerator.js";
 import path from 'node:path';
-import { __basedir } from "../config/serverConfig.js";
+import { __basedir, bcryptSaltRounds } from "../config/serverConfig.js";
 import { fileService } from "../service/file.js";
 import { genParentalAuthCode } from "../util/parentalAuthCodeGenerator.js";
+import bcrypt from 'bcrypt';
 
 async function apply(req, res) {
     try {
@@ -87,6 +88,7 @@ async function apply(req, res) {
         data.activeStudent = false;
         data.uploadedDocuments = documentFiles.map(file => file._id);
         data.profilePicture = profilePictureFile._id;
+        data.password = await bcrypt.hash(data.password, Number(bcryptSaltRounds));
         data.parentalAuthenticationCode = genParentalAuthCode();
         const newUser = await userService.createNewUser(data);
         const applicationData = {
