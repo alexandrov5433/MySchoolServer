@@ -7,6 +7,8 @@ import announcementRouter from './announcement.js';
 import assignmentRouter from './assignment.js';
 import materialRouter from './material.js';
 import profileRouter from './profile.js';
+import parentRouter from './parent.js';
+import studentsRouter from './students.js';
 
 const router = Router();
 
@@ -18,6 +20,8 @@ router.use('/announcement', announcementRouter);
 router.use('/assignment', assignmentRouter);
 router.use('/material', materialRouter);
 router.use('/profile', profileRouter);
+router.use('/parent', parentRouter);
+router.use('/students', studentsRouter)
 
 
 router.use('*', (req, res) => {

@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { authenticationSrvice } from "../service/authentication.js";
+import { authenticationService } from "../service/authentication.js";
 import { assignment } from "../controllers/assignment.js";
 
 
 const router = Router();
 
 router.post('/',
-    authenticationSrvice.authGuard('specificUserStatus', ['teacher']),
+    authenticationService.authGuard('specificUserStatus', ['teacher']),
     assignment.createAssignment
 );
 router.post('/solution',
-    // authenticationSrvice.authGuard('specificUserStatus', ['student']),
+    // authenticationService.authGuard('specificUserStatus', ['student']),
     assignment.uploadSolution
 );
 

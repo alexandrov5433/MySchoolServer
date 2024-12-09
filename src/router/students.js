@@ -1,17 +1,12 @@
 import { Router } from "express";
 import { authenticationService } from "../service/authentication.js";
-import { material } from "../controllers/material.js";
-
+import { students } from "../controllers/students.js";
 
 const router = Router();
 
-router.post('/',
+router.get('/',
     authenticationService.authGuard('specificUserStatus', ['teacher']),
-    material.createMaterial
-);
-router.delete('/',
-    authenticationService.authGuard('specificUserStatus', ['teacher']),
-    material.removeMaterial
+    students.getActiveStudents
 );
 
 export default router;
