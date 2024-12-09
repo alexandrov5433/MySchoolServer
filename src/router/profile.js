@@ -21,9 +21,22 @@ router.delete('/user/:_id/documents/:fileId',
     authenticationSrvice.authGuard('allUsers'),
     profile.deleteDocument
 );
+
 router.get('/user/:_id/grading',
     authenticationSrvice.authGuard('allUsers'),
     profile.getUserGradings
+);
+router.post('/user/:_id/grading',
+    authenticationSrvice.authGuard('specificUserStatus', ['teacher']),
+    profile.addGradeForUserInGrading
+);
+router.put('/user/:_id/grading',
+    authenticationSrvice.authGuard('specificUserStatus', ['teacher']),
+    profile.editGrade
+);
+router.delete('/user/:_id/grading/:gradingId/:gradeId',
+    authenticationSrvice.authGuard('specificUserStatus', ['teacher']),
+    profile.dleteGrade
 );
 
 export default router;

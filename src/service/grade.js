@@ -28,11 +28,14 @@ async function editGrade(gradeId, newValue) {
 }
 
 async function getGradingForUserAndSubject(userId, subjectId) {
-    return await Grading.findOne({student: userId, subject: subjectId});
+    return await Grading.findOne({ student: userId, subject: subjectId });
 }
 
 async function getAllGradingsForStudent(userId) {
-    return await Grading.find({student: userId}).populate([{ path: 'subject', populate: 'teacher'}]);
+    return await Grading.find({ student: userId }).populate([
+        { path: 'subject', populate: 'teacher' },
+        { path: 'grades' }
+    ]);
 }
 
 async function addGradingForStudentAndSubjectIfOneDoesNotExist(userId, subjectId) {
