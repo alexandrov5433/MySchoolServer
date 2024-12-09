@@ -1,7 +1,9 @@
 import { assignmentService } from '../service/assignment.js';
 import { assignmentSubmitionService } from '../service/assignmentSubmition.js';
+import parseError from '../service/errorParsing.js';
 import { fileService } from '../service/file.js';
 import { subjectService } from '../service/subject.js';
+import { userService } from '../service/user.js';
 
 async function createAssignment(req, res) {
     try {
@@ -81,7 +83,43 @@ async function uploadSolution(req, res) {
     }
 }
 
+async function deleteAssignment(req, res) {
+    try {
+        const assignmentId = req.params.assignmentId || '';
+        const teacherId = req.cookies.user._id || '';
+        console.log('assignmentId', assignmentId);
+        console.log('teacherId', teacherId);
+        const assignment = await assignmentService.getAssignmentById(assignmentId);
+        
+        if (!assignment) {
+            throw new Error(`An assignment with _id: "${assignmentId}" does not exist.`);
+        }
+        if (!await userService.getUserById(teacherId)) {
+            throw new Error(`A teacher with _id: "${teacherId}" does not exist.`);
+        }
+        if (assignment.teacher != teacherId) {
+            throw new Error(`You are not authorazed to delete this assignment.`);
+        }
+        await assignmentService.deleteAssignment(assignmentId);
+        res.status(200);
+        res.json(JSON.stringify({
+            status: 200,
+            msg: 'Assignement deleted!'
+        }));
+        res.end();
+    } catch (e) {
+        console.log(e);
+        res.status(400);
+        res.json(JSON.stringify({
+            status: 400,
+            msg: parseError(e).errors
+        }));
+        res.end();
+    }
+}
+
 export const assignment = {
     createAssignment,
-    uploadSolution
+    uploadSolution,
+    deleteAssignment
 }

@@ -10,8 +10,13 @@ router.post('/',
     assignment.createAssignment
 );
 router.post('/solution',
-    // authenticationService.authGuard('specificUserStatus', ['student']),
+    authenticationService.authGuard('specificUserStatus', ['student']),
     assignment.uploadSolution
 );
+router.delete('/:assignmentId',
+    authenticationService.authGuard('specificUserStatus', ['teacher']),
+    assignment.deleteAssignment
+);
+
 
 export default router;

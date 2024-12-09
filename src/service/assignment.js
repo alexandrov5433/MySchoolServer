@@ -17,6 +17,33 @@ async function addSolution(assignmentSubmitionId, assignmentId) {
     return assignment;
 }
 
+/**
+ * Deletes the given assignment, its resource, its assignment submitions and their documents (File).
+ * @param {String} assignmentId The _id of the Assignment document to be deleted. 
+ * @returns 
+ */
+async function deleteAssignment(assignmentId) {
+    const assignment = await Assignment.findById(assignmentId)
+        .populate([
+            {path: 'resource'},
+            {path: 'assignmentSubmitions', populate: [
+                {path: 'document'}
+            ]}, 
+        ]);
+    if (!assignment) {
+        throw new Error(`An assignment with _id: "${assignmentId}" does not exist.`);
+    }
+    for (let submition of assignment.assignmentSubmitions) {
+        const fileToDeleteId = submition.document._id;
+        const docDeletion = fileService.deleteFileByIdFormDBAndSystem(fileToDeleteId);
+        const submitionDeletion = assignmentSubmitionService.deleteAssignmentSubmitionById(submition._id);
+        await Promise.all([docDeletion, submitionDeletion]);
+    }
+    const resourceDeletion = fileService.deleteFileByIdFormDBAndSystem(assignment.resource._id);
+    const assignmentDeletion = Assignment.findByIdAndDelete(assignmentId);
+    return await Promise.all([resourceDeletion, assignmentDeletion]);
+}
+
 async function deleteAssignmentSubmitionOfStudent(assignmentId, studentId) {
     const assignment = await Assignment.findById(assignmentId).populate({ path: 'assignmentSubmitions', populate: { path: 'document'}});
     const assignmentSubmition = assignment.assignmentSubmitions.find( a => a.student == studentId); //student is not populated -> only string ID
@@ -57,5 +84,6 @@ export const assignmentService = {
     createNewAssignment,
     getAssignmentById,
     addSolution,
-    deleteAssignmentSubmitionOfStudent
+    deleteAssignmentSubmitionOfStudent,
+    deleteAssignment
 }
