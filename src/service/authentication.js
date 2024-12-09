@@ -2,22 +2,29 @@ import { teacherAuthCode } from "../config/serverConfig.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { jwtSecret, jwtAlgorithm, jwtExparation } from '../config/serverConfig.js';
+import { userService } from "./user.js";
 
 /**
  * Verifies the the authentication code by registration of parents and teachers.
- * @param {string} code
+ * @param {String} code
  * The authentication code with which the user registers as parent or teacher. 
- * @returns {string|null} 
- * Null return value is for wrong code. The strings 'parent' or 'teacher' mean that the code is valid for the given status as a returned string.
+ * @returns {String|false|Document}
+ * For teacher: If the code is valid returns 'teacher', else false.
+ * For parent: If there is an active student ( activeStudent: true ) with this parentalAuthenticationCode ( parentalAuthenticationCode: ${code} ) returns the User document of the student, else false. 
+ * 
  */
-async function checkAuthCode(code) {
-    if (code === '1') {
-        return 'parent';
-    } else if (code === teacherAuthCode) {
-        return 'teacher';
+async function checkAuthCode(code, registerAs) {
+    if (registerAs === 'teacher') {
+        return code === teacherAuthCode ? 'teacher' : false;
+    } else if (registerAs === 'parent') {
+        const activeStudentWithThisAuthCode = await userService.doesAuthCodeExistForActiveStudent(code);
+        return activeStudentWithThisAuthCode ? activeStudentWithThisAuthCode : false;
+    } else {
+        return false;
     }
-    return null;
 }
+
+
 
 /**
  * Verifies the given password aginst the given hash.
@@ -136,7 +143,7 @@ async function generateCookie(_id, status) {
     });
 }
 
-export const authenticationSrvice = {
+export const authenticationService = {
     checkAuthCode,
     comparePassToHash,
     checkCookie,
