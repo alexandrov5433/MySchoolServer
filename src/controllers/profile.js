@@ -192,8 +192,6 @@ async function dleteGrade(req, res) {
             throw new Error(`GradeId is missing. Value provided for gradeId: "${gradeId}".`);
         }
         await gradeService.deleteGradeAndRemoveFromGrading(gradeId, gradingId);
-        console.log('gradingId', gradingId);
-        console.log('gradeId', gradeId);
         res.status(200);
         res.json(JSON.stringify({
             status: 200,
