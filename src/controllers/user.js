@@ -5,8 +5,9 @@ import parseError from "../service/errorParsing.js";
 import { fileService } from "../service/file.js";
 import { userService } from "../service/user.js";
 import { genDisplayId } from "../util/idGenerator.js";
-import { authenticationSrvice } from '../service/authentication.js';
+import { authenticationService } from '../service/authentication.js';
 import bcrypt from 'bcrypt';
+import { genId } from '../util/idGenerator.js';
 
 
 async function login(req, res) {
@@ -16,7 +17,7 @@ async function login(req, res) {
             email: req.body.email,
             password: req.body.password
         }
-        if (!['parent','student','teacher'].includes(loginData.loginAs)) {
+        if (!['parent', 'student', 'teacher'].includes(loginData.loginAs)) {
             throw new Error(`The login status "${loginData.loginAs}" is invalid. Options are: parent, student or teacher.`);
         }
         if (loginData.loginAs === 'student') {
@@ -29,13 +30,13 @@ async function login(req, res) {
         if (!existingUser) {
             throw new Error('A user with these credentials does not exist.');
         }
-        const isPasswordCorrect = await authenticationSrvice.comparePassToHash(loginData.password, existingUser.password);
+        const isPasswordCorrect = await authenticationService.comparePassToHash(loginData.password, existingUser.password);
         if (!isPasswordCorrect) {
             throw new Error('Wrong password.');
         }
-        const cookie = await authenticationSrvice.generateCookie(existingUser._id, existingUser.status);
+        const cookie = await authenticationService.generateCookie(existingUser._id, existingUser.status);
         console.log(cookie);
-        
+
         res.status(200);
         res.cookie('user', `${cookie}`, { secure: false, httpOnly: false });
         res.json(JSON.stringify({
@@ -60,23 +61,31 @@ async function register(req, res) {
         const authenticationCode = req.body.authenticationCode || null;
         const registerData = {
             status: req.body.registerAs,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            dateOfBirth: req.body.dateOfBirth,
-            email: req.body.email,
-            mobileNumber: req.body.mobileNumber,
-            homeNumber: req.body.homeNumber,
-            street: req.body.street,
-            houseNumber: req.body.houseNumber,
-            city: req.body.city,
-            password: req.body.password
+            firstName: req.body.firstName.trim(),
+            lastName: req.body.lastName.trim(),
+            dateOfBirth: req.body.dateOfBirth.trim(),
+            email: req.body.email.trim(),
+            mobileNumber: req.body.mobileNumber.trim(),
+            homeNumber: req.body.homeNumber.trim(),
+            street: req.body.street.trim(),
+            houseNumber: req.body.houseNumber.trim(),
+            city: req.body.city.trim(),
+            password: req.body.password.trim()
         }
-        console.log(req.body);
-        const codeCheckResult = await authenticationSrvice.checkAuthCode(authenticationCode);
-        if (codeCheckResult !== registerData.status) {
+        if (await userService.doesUserWithThisEmailExist(registerData.email)) {
+            throw new Error(`A user with this email (${registerData.email}) alredy exists.`);
+        }
+        if (!['parent', 'teacher'].includes(registerData.status)) {
+            throw new Error(`You have given a wrong status. Options are: parent or teacher. Given status:"${registerData.registerAs}".`);
+        }
+        const codeCheckResult = await authenticationService.checkAuthCode(authenticationCode, registerData.status);
+        if (registerData.status === 'teacher' && codeCheckResult !== registerData.status) {
+            throw new Error('Opps! Either the authentication code is wrong or you have selected the wrong status (parent or teacher).');
+        } else if (registerData.status === 'parent' && !codeCheckResult) {
             throw new Error('Opps! Either the authentication code is wrong or you have selected the wrong status (parent or teacher).');
         }
-        
+
+
         let newFile = null;
         if (req.files && Object.keys(req.files).length !== 0) {
             const file = req.files.profilePicture;
@@ -110,13 +119,15 @@ async function register(req, res) {
         registerData.profilePicture = newFile._id;
         registerData.displayId = genDisplayId();
         registerData.password = await bcrypt.hash(registerData.password, Number(bcryptSaltRounds));
-        const newUser = await userService.createNewUser(registerData);
-     
         if (registerData.status === 'parent') {
-            console.log('TODO add parent to student'); //TODO add parent to student
+            registerData.children = [`${codeCheckResult._id}`];
         }
+        const newUser = await userService.createNewUser(registerData);
 
-        const cookie = await authenticationSrvice.generateCookie(newUser._id, newUser.status);
+        if (registerData.status === 'parent') {
+            await userService.addParentToStudent(codeCheckResult._id, newUser._id);
+        }
+        const cookie = await authenticationService.generateCookie(newUser._id, newUser.status);
         res.status(200);
         res.cookie('user', `${cookie}`, { secure: false, httpOnly: false });
         res.json(JSON.stringify({
