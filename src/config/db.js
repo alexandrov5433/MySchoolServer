@@ -11,6 +11,8 @@ import Grade from '../models/Grade.js';
 import Grading from '../models/Grading.js';
 import Subject from "../models/Subject.js";
 import User from "../models/User.js";
+import FaqEntry from "../models/FaqEntry.js";
+import Form from "../models/Form.js";
 
 async function configDb() {
     try {
