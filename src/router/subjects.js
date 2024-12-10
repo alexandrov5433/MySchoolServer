@@ -10,11 +10,9 @@ router.post('/create-new-subject',
 );
 
 router.get('/',
-    authenticationService.authGuard('specificUserStatus', ['student', 'teacher']),
     subjects.getSubjects
 );
 router.get('/details/:_id',
-    authenticationService.authGuard('specificUserStatus', ['student', 'teacher']),
     subjects.getSubjectDetails
 );
 router.post('/participants/manage',
