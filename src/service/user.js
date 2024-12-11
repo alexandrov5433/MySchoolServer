@@ -74,6 +74,9 @@ async function checkCodeAndAddChild(parentId, authCode) {
     if (!student) {
         throw new Error(`A user student with authentication code: "${authCode}" either does not exist or the student application is still being reviewed.`);
     }
+    if (parent.children.includes(student._id)) {
+        throw new Error(`This student is already listed as a child.`);
+    }
     await addParentToStudent(student._id, parentId);
     await addStudentToParent(student._id, parentId);
     return true;
