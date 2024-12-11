@@ -78,8 +78,13 @@ async function register(req, res) {
         if (!['parent', 'teacher'].includes(registerData.status)) {
             throw new Error(`You have given a wrong status. Options are: parent or teacher. Given status:"${registerData.registerAs}".`);
         }
-        const codeCheckResult = await authenticationService.checkAuthCode(authenticationCode, registerData.status);
-        if (registerData.status === 'teacher' && codeCheckResult !== registerData.status) {
+        let codeCheckResult;
+        if (registerData.status === 'teacher') {
+            codeCheckResult = authenticationService.checkAuthCodeForTeacher(authenticationCode);
+        } else if (registerData.status === 'parent') {
+            codeCheckResult = await authenticationService.checkAuthCodeForParent(authenticationCode);
+        }
+        if (registerData.status === 'teacher' && !codeCheckResult) {
             throw new Error('Opps! Either the authentication code is wrong or you have selected the wrong status (parent or teacher).');
         } else if (registerData.status === 'parent' && !codeCheckResult) {
             throw new Error('Opps! Either the authentication code is wrong or you have selected the wrong status (parent or teacher).');

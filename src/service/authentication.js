@@ -4,27 +4,14 @@ import jwt from 'jsonwebtoken';
 import { jwtSecret, jwtAlgorithm, jwtExparation } from '../config/serverConfig.js';
 import { userService } from "./user.js";
 
-/**
- * Verifies the the authentication code by registration of parents and teachers.
- * @param {String} code
- * The authentication code with which the user registers as parent or teacher. 
- * @returns {String|false|Document}
- * For teacher: If the code is valid returns 'teacher', else false.
- * For parent: If there is an active student ( activeStudent: true ) with this parentalAuthenticationCode ( parentalAuthenticationCode: ${code} ) returns the User document of the student, else false. 
- * 
- */
-async function checkAuthCode(code, registerAs) {
-    if (registerAs === 'teacher') {
-        return code === teacherAuthCode ? 'teacher' : false;
-    } else if (registerAs === 'parent') {
-        const activeStudentWithThisAuthCode = await userService.doesAuthCodeExistForActiveStudent(code);
-        return activeStudentWithThisAuthCode ? activeStudentWithThisAuthCode : false;
-    } else {
-        return false;
-    }
+
+async function checkAuthCodeForParent(code) {
+    const activeStudentWithThisAuthCode = await userService.doesAuthCodeExistForActiveStudent(code);
+    return activeStudentWithThisAuthCode ? activeStudentWithThisAuthCode : false;
 }
-
-
+function checkAuthCodeForTeacher(code) {
+    return code === teacherAuthCode ? true : false;
+}
 
 /**
  * Verifies the given password aginst the given hash.
@@ -48,7 +35,7 @@ async function checkCookie(req, res, next) {
     if (req.cookies.user) {
         try {
             const result = new Promise((resolve, reject) => {
-                jwt.verify(req.cookies.user, jwtSecret, { algorithms: [`${jwtAlgorithm}`]}, (err, token) => {
+                jwt.verify(req.cookies.user, jwtSecret, { algorithms: [`${jwtAlgorithm}`] }, (err, token) => {
                     if (err) {
                         return reject(err);
                     }
@@ -77,7 +64,7 @@ async function checkCookie(req, res, next) {
  * @param {Array<String>} requiredStatus 
  * Options: parent, student or teacher.
  */
-function authGuard(authType, requiredStatus=[]) {
+function authGuard(authType, requiredStatus = []) {
     const funcs = {
         specificUserStatus: (req, res, next) => {
             const user = req.cookies.user;
@@ -144,9 +131,10 @@ async function generateCookie(_id, status) {
 }
 
 export const authenticationService = {
-    checkAuthCode,
     comparePassToHash,
     checkCookie,
     authGuard,
-    generateCookie
+    generateCookie,
+    checkAuthCodeForTeacher,
+    checkAuthCodeForParent
 };
