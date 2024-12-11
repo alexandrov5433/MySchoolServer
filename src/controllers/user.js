@@ -21,7 +21,7 @@ async function login(req, res) {
             throw new Error(`The login status "${loginData.loginAs}" is invalid. Options are: parent, student or teacher.`);
         }
         if (loginData.loginAs === 'student') {
-            const isStudent = userService.isActiveStudent(loginData.email);
+            const isStudent = await userService.isActiveStudent(loginData.email);
             if (!isStudent) {
                 throw new Error(`There is no active student with this email address: "${loginData.email}". You may apply to become one. If you already have, we are still reviewing your application.`);
             }
