@@ -126,6 +126,10 @@ async function getActiveStudents(firstName, lastName, displayId) {
     });
 }
 
+async function deleteUserById(userId) {
+    return await User.findByIdAndDelete(userId);
+}
+
 export const userService = {
     createNewUser,
     getUserById,
@@ -141,5 +145,6 @@ export const userService = {
     getChildrenForParent,
     checkCodeAndAddChild,
     getAllActiveStudents,
-    getActiveStudents
+    getActiveStudents,
+    deleteUserById
 };

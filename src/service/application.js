@@ -46,9 +46,10 @@ async function acceptPendingApplication(_id) {
     return await Application.findOneAndUpdate({status: 'pending', _id}, {status: 'accepted'});
 }
 
-async function rejectPendingApplication(_id) {
-    return await Application.findOneAndUpdate({status: 'pending', _id}, {status: 'rejected'});
+async function rejectAndDeletePendingApplication(_id) {
+    return await Application.findOneAndDelete({status: 'pending', _id});
 }
+
 
 
 export const applicationService = {
@@ -56,5 +57,5 @@ export const applicationService = {
     getPendingApplications,
     getPendingApplicationById,
     acceptPendingApplication,
-    rejectPendingApplication
+    rejectAndDeletePendingApplication
 };

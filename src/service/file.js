@@ -15,6 +15,10 @@ async function deleteFileByIdFormDBAndSystem(_id) {
     return true;
 }
 
+async function deleteFileDocumentOnlyFromDB(_id) {
+    return await File.findByIdAndDelete(_id);
+}
+
 /**
  * Returns a document of File.
  * @param {string} _id
@@ -68,5 +72,6 @@ export const fileService = {
     getFileById,
     saveIncommingFile,
     deleteFileFromSystem,
-    deleteFileByIdFormDBAndSystem
+    deleteFileByIdFormDBAndSystem,
+    deleteFileDocumentOnlyFromDB
 };

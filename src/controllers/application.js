@@ -84,7 +84,6 @@ async function apply(req, res) {
                 encoding: '7bit',
             };
             profilePictureFile = await fileService.createNewFile(defaultProfilePictureData);
-            await file.mv(defaultProfilePictureData.pathToFile);
         }
 
         data.displayId = genDisplayId();
@@ -211,18 +210,38 @@ async function manageApplication(req, res) {
                 return false;
             },
             reject: async (appId) => {
-                const document = await applicationService.rejectPendingApplication(appId);
-                return Boolean(document);
+                const applicationToDelete = await applicationService.getPendingApplicationById(appId);
+                //application docs
+                const filesToDelete = applicationToDelete.applicationDocuments.map(file => file._id);
+                //applicant pic
+                const applicantPictureFile = await fileService.getFileById(applicationToDelete.applicant.profilePicture);
+                //check if picture file is the default picture
+                if (applicantPictureFile.uniqueName === 'default-profile-picture.jpg') {
+                    //delete only the File document from DB, because this is the file for the default profile picture of all users
+                    await fileService.deleteFileDocumentOnlyFromDB(applicationToDelete.applicant.profilePicture);
+                } else {
+                    //add picture file for deletion from DB and system
+                    filesToDelete.push(applicationToDelete.applicant.profilePicture);
+                }
+                //delete app docs and user picture
+                const fileDeletionPromises = filesToDelete.map(fileId => fileService.deleteFileByIdFormDBAndSystem(fileId));
+                await Promise.all(fileDeletionPromises);
+                //delete user
+                await userService.deleteUserById(applicationToDelete.applicant._id);
+                //delete application
+                await applicationService.rejectAndDeletePendingApplication(appId);
+                return true;
             }
         };
         const success = await actionsLib[action](_id);
         if (!success) {
             throw new Error(`A pending application with "_id":"${_id}" was not found. The "action":"${action}" could not be excuted. Please try again.`);
         }
+        const message = action === 'accept' ? 'Application was accepted!' : 'Application was rejected!';
         res.status(200);
         res.json(JSON.stringify({
             status: 200,
-            msg: 'ok'
+            msg: message
         }));
         res.end();
     } catch (e) {
