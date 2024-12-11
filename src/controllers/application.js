@@ -26,6 +26,9 @@ async function apply(req, res) {
             city: req.body.city.trim(),
             password: req.body.password.trim()
         }
+        if (await userService.doesUserWithThisEmailExist(data.email)) {
+            throw new Error(`A user with this email (${data.email}) alredy exists.`);
+        }
         let profilePictureFile = null;
         const documentFiles = [];
 
