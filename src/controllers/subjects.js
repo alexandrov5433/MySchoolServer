@@ -118,7 +118,7 @@ async function maganeParticipation(req, res) {
                 if (isAlreadyParticipant) {
                     throw new Error(`The user with _id: "${userId}" is already a participant in the subject with _id: "${subjectId}".`);
                 }
-                const addition = await subjectService.addParticipant(subjectId, userId);
+                await subjectService.addParticipant(subjectId, userId);
                 await gradeService.addGradingForStudentAndSubjectIfOneDoesNotExist(userId, subjectId);
                 return 'A student has joined the subject.';
             },
