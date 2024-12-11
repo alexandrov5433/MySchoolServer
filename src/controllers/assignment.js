@@ -87,8 +87,6 @@ async function deleteAssignment(req, res) {
     try {
         const assignmentId = req.params.assignmentId || '';
         const teacherId = req.cookies.user._id || '';
-        console.log('assignmentId', assignmentId);
-        console.log('teacherId', teacherId);
         const assignment = await assignmentService.getAssignmentById(assignmentId);
         
         if (!assignment) {

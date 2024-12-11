@@ -32,8 +32,6 @@ async function getAllFaqData(req, res) {
         const payload = {
             results: searchResults
         }
-        console.log(payload);
-        
         res.status(200);
         res.json(JSON.stringify(payload));
         res.end();

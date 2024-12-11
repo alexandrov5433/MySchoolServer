@@ -162,8 +162,6 @@ async function editGrade(req, res) {
         if (!newGrade) {
             throw new Error(`New grade is missing. Value provided for newGrade: "${newGrade}".`);
         }
-        console.log('gradeId', gradeId);
-        console.log('newGrade', newGrade);
         await gradeService.editGrade(gradeId, newGrade);
         res.status(200);
         res.json(JSON.stringify({

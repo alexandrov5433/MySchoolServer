@@ -50,19 +50,6 @@ async function getSubjects(req, res) {
         } else {
             searchRes = await subjectService.getSubjectsByTitleAndDisplayId(title, subjectDisplayId);
         }
-        // console.log(searchRes);
-        // payload
-        // {
-        //     results: [
-        //         {
-        //             _id: string,
-        //             teacher: string,
-        //             title: string,
-        //             displayId: string,
-        //             backgroundImageNumber: string
-        //         }
-        //     ]
-        // }
         payload.results = searchRes.reduce((acc, cur) => {
             acc.push({
                 _id: cur._id,
@@ -110,8 +97,6 @@ async function getSubjectDetails(req, res) {
 
 async function maganeParticipation(req, res) {
     try {
-        console.log(req.body);
-        
         const subjectId = req.body.subjectId; //Subject _id
         const userId = req.body.userId; //User _id
         const action = req.body.action; //join or leave

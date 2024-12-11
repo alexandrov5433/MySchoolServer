@@ -35,8 +35,6 @@ async function login(req, res) {
             throw new Error('Wrong password.');
         }
         const cookie = await authenticationService.generateCookie(existingUser._id, existingUser.status);
-        console.log(cookie);
-
         res.status(200);
         res.cookie('user', `${cookie}`, { secure: false, httpOnly: false });
         res.json(JSON.stringify({

@@ -51,8 +51,6 @@ async function createNewForm(req, res) {
 async function deleteForm(req, res) {
     try {
         const formId = req.params._id || '';
-        console.log(formId);
-        
         if (!formId) {
             throw new Error(`No form could be deleted because no formId was sent. formId: "${formId}".`);
         }

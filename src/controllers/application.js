@@ -190,10 +190,8 @@ async function getPendingApplicationById(req, res) {
 
 async function manageApplication(req, res) {
     try {
-        console.log('manage', req.body);
         const _id = req.body._id || '';
         const action = req.body.action || '';
-        console.log(_id, action);
         if (!_id) {
             throw new Error(`For an application to be managed the "_id" must be present. The recieved value for "_id" is: "${_id}".`);
         } else if (!['accept', 'reject'].includes(action)) {
