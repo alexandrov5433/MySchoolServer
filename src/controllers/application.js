@@ -1,6 +1,6 @@
-import { applicationService } from "../service/application.js";
+// import { applicationService } from "../service/application.js";
+// import { userService } from "../service/user.js";
 import parseError from "../service/errorParsing.js";
-import { userService } from "../service/user.js";
 import { genDisplayId, genId } from "../util/idGenerator.js";
 import path from 'node:path';
 import { __basedir, bcryptSaltRounds } from "../config/serverConfig.js";
