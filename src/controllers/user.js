@@ -122,6 +122,7 @@ async function register(req, res) {
         registerData.profilePicture = newFile._id;
         registerData.displayId = genDisplayId();
         registerData.password = await bcrypt.hash(registerData.password, Number(bcryptSaltRounds));
+        registerData.backgroundImageNumber = `${randomNumber(1, 7)}.jpg`;
         if (registerData.status === 'parent') {
             registerData.children = [`${codeCheckResult._id}`];
         }
@@ -147,6 +148,12 @@ async function register(req, res) {
             msg: parseError(e).errors
         }));
         res.end();
+    }
+    
+    function randomNumber(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }
 

@@ -21,19 +21,19 @@ async function user() {
             date_of_birth VARCHAR(256),
             email VARCHAR(256),
             mobile_number VARCHAR(256),
-            home_number VARCHAR(256),
+            home_number VARCHAR(256) DEFAULT '',
             street VARCHAR(256),
             house_number VARCHAR(256),
             city VARCHAR(256),
             password VARCHAR(256),
             profile_picture integer REFERENCES public.file (id),
             parental_authentication_code VARCHAR(256),
-            uploaded_documents integer[],
+            uploaded_documents integer[] DEFAULT integer[],
             display_id VARCHAR(256),
-            parents integer[],
+            parents integer[] DEFAULT integer[],
             active_student BOOLEAN DEFAULT false,
             background_image_number VARCHAR(256),
-            children integer[]
+            children integer[] DEFAULT integer[]
         )`
     );
     client.release();
@@ -71,6 +71,7 @@ async function subject() {
             backgroundImageNumber VARCHAR(256)
         )`
     );
+    client.release();
     return res;
 }
 
@@ -84,6 +85,7 @@ async function grading() {
             grades integer[]
         )`
     );
+    client.release();
     return res;
 }
 
@@ -95,6 +97,7 @@ async function grade() {
             value VARCHAR(256) NOT NULL
         )    
     `);
+    client.release();
     return res;
 }
 
@@ -106,6 +109,7 @@ async function form() {
             file integer REFERENCES public.file (id)
         )    
     `);
+    client.release();
     return res;
 }
 
@@ -118,6 +122,7 @@ async function faqEntry() {
             answer VARCHAR(256) NOT NULL
         )    
     `);
+    client.release();
     return res;
 }
 
@@ -130,6 +135,7 @@ async function assignmentSubmition() {
             document integer REFERENCES public.file (id) NOT NULL
         )    
     `);
+    client.release();
     return res;
 }
 
@@ -146,6 +152,7 @@ async function assignment() {
             assignmentSubmitions integer[]
         )    
     `);
+    client.release();
     return res;
 }
 
@@ -168,6 +175,7 @@ async function application() {
             applicant integer REFERENCES public.user (id) NOT NULL
         )    
     `);
+    client.release();
     return res;
 }
 
@@ -182,6 +190,7 @@ async function announcement() {
             dateTime VARCHAR(256)
         )    
     `);
+    client.release();
     return res;
 }
 
